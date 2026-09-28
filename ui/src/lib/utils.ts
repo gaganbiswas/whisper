@@ -3,11 +3,11 @@ import * as Crypto from "expo-crypto";
 import { toByteArray } from "base64-js";
 
 export const STORAGE_KEYS = {
-  identityKey: "pingme_id_key",
-  token: "pingme_auth_token",
+  identityKey: "whisper_id_key",
+  token: "whisper_auth_token",
   deviceId: "dv_id",
   userId: "user_id",
-  signedPrekey: "pingme_signed_pvt_prekey",
+  signedPrekey: "whisper_signed_pvt_prekey",
 } as const;
 
 export function decodeBase64(value: string): Uint8Array {

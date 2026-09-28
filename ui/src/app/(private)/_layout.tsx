@@ -1,9 +1,11 @@
 import { router, Stack } from "expo-router";
 import { ChatProvider } from "@/context/chat-context";
 import { Pressable } from "react-native";
-import { SymbolView } from "expo-symbols";
+import { Lucide } from "@react-native-vector-icons/lucide";
+import { useTheme } from "@/lib/theme";
 
 export default function PrivateLayout() {
+  const { colors } = useTheme();
   return (
     <ChatProvider>
       <Stack>
@@ -22,7 +24,7 @@ export default function PrivateLayout() {
                   }
                   hitSlop={8}
                 >
-                  <SymbolView name={{ ios: "plus", android: "add" }} />
+                  <Lucide name="plus" color={colors.primary} size={24} />
                 </Pressable>
               );
             },

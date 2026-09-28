@@ -14,24 +14,28 @@ export default function WelcomeScreen() {
       edges={["bottom", "left", "right"]}
       style={{ backgroundColor: colors.panel, flex: 1 }}
     >
-      <View className="flex-1">
+      <View className="flex-1 justify-between py-8">
         <Image
           source={require("../../../assets/images/onboarding.png")}
           style={{ width: "100%", aspectRatio: 1 }}
+          contentFit="contain"
         />
-        <Text className="text-center text-3xl font-semibold text-fg dark:text-fg-dark">
-          Welcome to PingMe
-        </Text>
 
-        <Text className="text-center mt-3 mb-10 text-fg-muted dark:text-fg-muted-dark">
-          Read our Privacy Policy. Tap "Agree & continue"{"\n"}to accept our
-          Terms of Service
-        </Text>
+        <View>
+          <Text className="text-center text-3xl font-semibold text-fg dark:text-fg-dark">
+            Welcome to Whisper
+          </Text>
 
-        <View className="items-center justify-center px-8 w-full">
-          <PrimaryButton onPress={() => router.push("/onboarding/login")}>
-            Agree & continue
-          </PrimaryButton>
+          <Text className="text-center mt-3 mb-10 text-fg-muted dark:text-fg-muted-dark">
+            Read our Privacy Policy. Tap "Agree & continue"{"\n"}to accept our
+            Terms of Service
+          </Text>
+
+          <View className="items-center justify-center px-8 w-full">
+            <PrimaryButton onPress={() => router.push("/onboarding/login")}>
+              Agree & continue
+            </PrimaryButton>
+          </View>
         </View>
       </View>
     </SafeAreaView>

@@ -76,16 +76,13 @@ export default function ChatsScreen() {
       />
 
       <FlatList
-        data={[
-          ...conversations,
-          { peer_id: 113, name: "Sanskruti", last_message: "Hello" },
-        ]}
+        data={conversations}
         keyExtractor={(item) => String(item.peer_id)}
         renderItem={({ item }) => (
           <ChatItem
             peerId={item.peer_id}
-            name={emails[item.peer_id] || "Loading..."}
-            lastMessage={item.last_message ?? "No messages yet"}
+            name={emails[item.peer_id] || ""}
+            lastMessage={item.last_message ?? ""}
           />
         )}
         contentInsetAdjustmentBehavior="automatic"

@@ -23,7 +23,7 @@ import { getUserEmail } from "@/lib/users";
 import { useChat } from "@/context/chat-context";
 import MessageStatusIcon from "@/components/message-status";
 import { useTheme } from "@/lib/theme";
-import { SymbolView } from "expo-symbols";
+import { Lucide } from "@react-native-vector-icons/lucide";
 
 export default function ChatScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -115,28 +115,6 @@ export default function ChatScreen() {
         behavior="padding"
         automaticOffset
       >
-        <View className="flex-row items-center bg-panel px-4 py-3 dark:bg-panel-dark border-b border-divider dark:border-divider-dark">
-          <Pressable className="mr-3 px-1 py-2" onPress={() => router.back()}>
-            <SymbolView name={"chevron.backward"} />
-          </Pressable>
-          <View className="flex-1 gap-0.5">
-            <Text
-              className="text-lg font-bold text-fg dark:text-fg-dark"
-              numberOfLines={1}
-            >
-              {peerEmail}
-            </Text>
-            <View className="flex-row items-center gap-2">
-              <View
-                className={`h-1.5 w-1.5 rounded-full ${isConnected ? "bg-emerald-500" : "bg-amber-400"}`}
-              />
-              <Text className="text-xs text-fg-muted dark:text-fg-muted-dark">
-                {isConnected ? "Connected" : "Connecting..."}
-              </Text>
-            </View>
-          </View>
-        </View>
-
         {loading ? (
           <View className="flex-1 items-center justify-center bg-canvas dark:bg-canvas-dark">
             <ActivityIndicator color={colors.primary} />
@@ -173,12 +151,10 @@ export default function ChatScreen() {
             ListEmptyComponent={
               <View className="items-center py-12">
                 <Text className="text-center text-fg-muted dark:text-fg-muted-dark">
-                  <SymbolView
+                  <Lucide
                     name={"lock"}
                     size={14}
-                    type="palette"
-                    colors={["#8696a0", "#667781"]}
-                    className="text-center"
+                    className="text-center dark:text-[#8696a0] text-[#667781]"
                   />{" "}
                   Messages are end-to-end encrypted.
                 </Text>
@@ -201,11 +177,7 @@ export default function ChatScreen() {
             onPress={submitMessage}
             disabled={!draft.trim() || sending}
           >
-            <SymbolView
-              name={"paperplane.fill"}
-              tintColor={"white"}
-              size={20}
-            />
+            <Lucide name={"send-horizonal"} color={"white"} size={20} />
           </Pressable>
         </View>
       </KeyboardAvoidingView>

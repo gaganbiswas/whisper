@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "pingme",
+    "name": "whisper",
     "slug": "PingMe",
     "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "pingme",
+    "scheme": "whisper",
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon"
@@ -18,7 +18,7 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.gaganbiswas.pingme"
+      "package": "com.gaganbiswas.whisper"
     },
     "web": {
       "output": "static",
@@ -51,7 +51,8 @@
             "enableShrinkResourcesInReleaseBuilds": true
           }
         }
-      ]
+      ],
+      "@react-native-vector-icons/lucide"
     ],
     "experiments": {
       "typedRoutes": true,
