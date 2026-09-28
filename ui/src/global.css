@@ -1,0 +1,24 @@
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css";
+
+@import "nativewind/theme";
+
+@theme {
+  --color-canvas: #fff;
+  --color-canvas-dark: #0a0a0a;
+  --color-panel: #ffffff;
+  --color-panel-dark: #0a0a0a;
+  --color-field: #f0f2f5;
+  --color-field-dark: #292929;
+  --color-bubble-in: #ffffff;
+  --color-bubble-in-dark: #2a3942;
+  --color-bubble-out: #d1fae5;
+  --color-bubble-out-dark: #065f46;
+  --color-divider: #e9edef;
+  --color-divider-dark: #1f1f1f;
+  --color-fg: #111b21;
+  --color-fg-dark: #e9edef;
+  --color-fg-muted: #667781;
+  --color-fg-muted-dark: #8696a0;
+}

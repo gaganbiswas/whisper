@@ -1,0 +1,39 @@
+import PrimaryButton from "@/components/ui/button";
+import { useRouter } from "expo-router";
+import { Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useTheme } from "@/lib/theme";
+import { Image } from "expo-image";
+
+export default function WelcomeScreen() {
+  const router = useRouter();
+  const { colors } = useTheme();
+
+  return (
+    <SafeAreaView
+      edges={["bottom", "left", "right"]}
+      style={{ backgroundColor: colors.panel, flex: 1 }}
+    >
+      <View className="flex-1">
+        <Image
+          source={require("../../../assets/images/onboarding.png")}
+          style={{ width: "100%", aspectRatio: 1 }}
+        />
+        <Text className="text-center text-3xl font-semibold text-fg dark:text-fg-dark">
+          Welcome to PingMe
+        </Text>
+
+        <Text className="text-center mt-3 mb-10 text-fg-muted dark:text-fg-muted-dark">
+          Read our Privacy Policy. Tap "Agree & continue"{"\n"}to accept our
+          Terms of Service
+        </Text>
+
+        <View className="items-center justify-center px-8 w-full">
+          <PrimaryButton onPress={() => router.push("/onboarding/login")}>
+            Agree & continue
+          </PrimaryButton>
+        </View>
+      </View>
+    </SafeAreaView>
+  );
+}
