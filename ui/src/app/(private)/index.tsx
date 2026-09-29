@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { Alert, FlatList, Pressable, Text, View } from "react-native";
+import { FlatList, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   router,
@@ -12,6 +12,7 @@ import { getUserEmail } from "@/lib/users";
 import { useChat } from "@/context/chat-context";
 import NewChatSheet from "@/components/new-chat-sheet";
 import { useTheme } from "@/lib/theme";
+import Alert from "@/components/alert";
 
 function openChat(peerId: number) {
   router.push({
@@ -40,10 +41,7 @@ export default function ChatsScreen() {
       );
       setEmails(Object.fromEntries(names));
     } catch (error: any) {
-      Alert.alert(
-        "Could not load chats",
-        error?.message || "Please try again.",
-      );
+      Alert("Could not load chats", error?.message || "Please try again.");
     }
   }, []);
 
@@ -107,7 +105,7 @@ function ChatItem({
 
   return (
     <Pressable
-      className="flex-row bg-panel p-4 dark:bg-panel-dark"
+      className={"flex-row items-center bg-panel p-4 dark:bg-panel-dark"}
       onPress={() => openChat(peerId)}
     >
       <View
@@ -123,12 +121,14 @@ function ChatItem({
       </View>
       <View className="flex-1 gap-1">
         <Text className="font-semibold text-fg dark:text-fg-dark">{name}</Text>
-        <Text
-          className="text-fg-muted dark:text-fg-muted-dark"
-          numberOfLines={1}
-        >
-          {lastMessage}
-        </Text>
+        {lastMessage ? (
+          <Text
+            className="text-fg-muted dark:text-fg-muted-dark"
+            numberOfLines={1}
+          >
+            {lastMessage}
+          </Text>
+        ) : null}
       </View>
     </Pressable>
   );

@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { AppState } from "react-native";
 import * as Crypto from "expo-crypto";
-import * as SecureStore from "expo-secure-store";
 import { x25519 } from "@noble/curves/ed25519.js";
 import ax from "./axios";
 import { getIdentityPrivateKey } from "./signal-protocol/security";
@@ -40,6 +39,7 @@ import {
   type ChatMessage,
 } from "../db/init";
 import { getDeviceId, STORAGE_KEYS } from "./utils";
+import storage from "./storage";
 
 type ReceiptStatus = "delivered" | "seen";
 
@@ -179,9 +179,7 @@ function sendReceipt(
 }
 
 async function fetchBundles(userId: number) {
-  const { data } = await ax.get<{ bundles: DeviceBundle[] }>(
-    `/keys/${userId}`,
-  );
+  const { data } = await ax.get<{ bundles: DeviceBundle[] }>(`/keys/${userId}`);
   return data.bundles;
 }
 
@@ -225,10 +223,7 @@ async function transmitMessage(
         x3dh = result.x3dhHeader;
       }
 
-      const { header, payload } = ratchetEncrypt(
-        session,
-        JSON.stringify(body),
-      );
+      const { header, payload } = ratchetEncrypt(session, JSON.stringify(body));
       await saveSession(bundle.deviceId, session);
 
       ws.send(
@@ -256,7 +251,7 @@ export function useChatSocket(myUserId: number, wsUrl: string) {
   const bumpMessageVersion = () => setMessageVersion((v) => v + 1);
   const flushing = useRef<Promise<void> | null>(null);
   const flushRequested = useRef(false);
-  // Pending messages already handed to the relay, awaiting its "sent" reply.
+  // Pending messages already handed to the relay
   const inFlight = useRef(new Set<string>());
 
   const flushOutbox = useCallback(() => {
@@ -277,7 +272,7 @@ export function useChatSocket(myUserId: number, wsUrl: string) {
               await transmitMessage(ws, myUserId, message);
             } catch (error) {
               inFlight.current.delete(message.id);
-              // Stop here so later messages can't overtake this one.
+              // Stop here so next message can't overtake
               console.warn("Could not send message, will retry", error);
               return;
             }
@@ -293,7 +288,7 @@ export function useChatSocket(myUserId: number, wsUrl: string) {
   const connect = useCallback(async () => {
     if (!myUserId) return;
 
-    const token = await SecureStore.getItemAsync(STORAGE_KEYS.token);
+    const token = await storage.getItem(STORAGE_KEYS.token);
     const current = wsRef.current;
     if (
       current?.readyState === WebSocket.OPEN ||
@@ -393,8 +388,7 @@ export function useChatSocket(myUserId: number, wsUrl: string) {
 
   const sendMessage = useCallback(
     async (toUserId: number, text: string) => {
-      // Stored first so it shows up immediately; the outbox delivers it now
-      // if connected, otherwise as soon as the socket reconnects.
+      // Stored immediately, delivered when connected
       await saveMessage({
         id: Crypto.randomUUID(),
         from_user: myUserId,

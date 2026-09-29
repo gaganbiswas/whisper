@@ -1,6 +1,6 @@
-import * as SecureStore from "expo-secure-store";
 import * as Crypto from "expo-crypto";
 import { toByteArray } from "base64-js";
+import storage from "./storage";
 
 export const STORAGE_KEYS = {
   identityKey: "whisper_id_key",
@@ -20,11 +20,11 @@ export function decodeBase64(value: string): Uint8Array {
 }
 
 export async function getDeviceId(): Promise<string> {
-  let deviceId = await SecureStore.getItemAsync(STORAGE_KEYS.deviceId);
+  let deviceId = await storage.getItem(STORAGE_KEYS.deviceId);
 
   if (!deviceId) {
     deviceId = Crypto.randomUUID();
-    await SecureStore.setItemAsync(STORAGE_KEYS.deviceId, deviceId);
+    await storage.setItem(STORAGE_KEYS.deviceId, deviceId);
   }
 
   return deviceId;

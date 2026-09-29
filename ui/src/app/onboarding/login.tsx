@@ -1,5 +1,5 @@
 import PrimaryButton from "@/components/ui/button";
-import { Text, TextInput, View, Alert, Keyboard } from "react-native";
+import { Text, TextInput, View, Keyboard } from "react-native";
 import { useState } from "react";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -7,6 +7,7 @@ import { useTheme } from "@/lib/theme";
 import { useRouter } from "expo-router";
 import Loader from "@/components/loader";
 import ax from "@/lib/axios";
+import Alert from "@/components/alert";
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -26,7 +27,8 @@ export default function LoginScreen() {
         params: { email: normalizedEmail },
       });
     } catch (error: any) {
-      Alert.alert(
+      Alert(
+        "Error",
         error?.response?.data?.message || error?.message || "Please try again.",
       );
     } finally {

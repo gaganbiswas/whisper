@@ -78,8 +78,7 @@ export const verifyCode = async (req: Request, res: Response) => {
     await db.transaction(async (tx) => {
       await tx`DELETE FROM otp WHERE user_id = ${userId}`;
 
-      // A device id identifies one physical install, so it can only belong
-      // to one account at a time; revoke any other account still using it.
+      // A device id identifies one account connected to one device
       await tx`
         UPDATE devices SET revoked_at = datetime('now')
         WHERE device_id = ${deviceId} AND user_id != ${userId} AND revoked_at IS NULL

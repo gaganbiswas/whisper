@@ -15,9 +15,6 @@ interface OtpInputProps {
   ref?: Ref<OtpInputHandle>;
 }
 
-// A single invisible TextInput sits on top of the boxes and owns the value.
-// This makes typing, backspace, paste and SMS/iOS one-time-code autofill
-// behave the same on Android and iOS, unlike one TextInput per digit.
 export default function OtpInput({
   length = 6,
   onComplete,
@@ -105,9 +102,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "600",
   },
-  // Covers the boxes so taps/long-press (paste) hit the real input. Kept at
-  // full opacity with transparent text because iOS ignores touches on views
-  // with alpha < 0.01.
+
   hiddenInput: {
     position: "absolute",
     top: 0,

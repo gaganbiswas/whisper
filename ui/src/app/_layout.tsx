@@ -4,11 +4,11 @@ import { SplashScreen, Stack, ThemeProvider } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { KeyboardProvider } from "react-native-keyboard-controller";
-import * as SecureStore from "expo-secure-store";
 import { PortalProvider } from "@/components/ui/portal";
 import { AuthProvider, useAuth } from "@/context/auth-context";
 import { STORAGE_KEYS } from "@/lib/utils";
 import { useNavigationTheme } from "@/lib/theme";
+import storage from "@/lib/storage";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -33,7 +33,8 @@ function RootNavigator() {
   const { isLoggedIn, signIn } = useAuth();
 
   useEffect(() => {
-    SecureStore.getItemAsync(STORAGE_KEYS.identityKey)
+    storage
+      .getItem(STORAGE_KEYS.identityKey)
       .then((identityKey) => {
         if (identityKey) signIn();
       })

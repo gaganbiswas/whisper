@@ -19,7 +19,7 @@ export type Conversation = {
 
 const dbPromise = SQLite.openDatabaseAsync("chat.db");
 
-// Statuses only ever move forward, so a late "delivered" receipt can't undo "seen".
+// Statuses only move forward
 const STATUS_RANK = `CASE status
   WHEN 'pending' THEN 0 WHEN 'sent' THEN 1 WHEN 'delivered' THEN 2 WHEN 'seen' THEN 3
 END`;

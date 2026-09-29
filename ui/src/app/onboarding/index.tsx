@@ -17,7 +17,12 @@ export default function WelcomeScreen() {
       <View className="flex-1 justify-between py-8">
         <Image
           source={require("../../../assets/images/onboarding.png")}
-          style={{ width: "100%", aspectRatio: 1 }}
+          style={{
+            width: "100%",
+            aspectRatio: 1,
+            maxWidth: 400,
+            marginHorizontal: "auto",
+          }}
           contentFit="contain"
         />
 
