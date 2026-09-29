@@ -1,4 +1,4 @@
-# Whisper
+# Whisper UI
 
 Under active development will be available soon at https://whisper.gaganbiswas.com
 
