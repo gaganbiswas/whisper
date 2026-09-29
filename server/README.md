@@ -1,4 +1,4 @@
-# Server
+# Whisper Server
 
 To install dependencies:
 
