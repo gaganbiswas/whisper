@@ -1,6 +1,6 @@
 import PrimaryButton from "@/components/ui/button";
 import { useRouter } from "expo-router";
-import { Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "@/lib/theme";
 import { Image } from "expo-image";
@@ -14,7 +14,13 @@ export default function WelcomeScreen() {
       edges={["bottom", "left", "right"]}
       style={{ backgroundColor: colors.panel, flex: 1 }}
     >
-      <View className="flex-1 justify-between py-8">
+      <ScrollView
+        contentContainerStyle={{
+          flexGrow: 1,
+          justifyContent: "space-between",
+          paddingVertical: 32,
+        }}
+      >
         <Image
           source={require("../../../assets/images/onboarding.png")}
           style={{
@@ -42,7 +48,7 @@ export default function WelcomeScreen() {
             </PrimaryButton>
           </View>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

@@ -1,4 +1,4 @@
-import { Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import { useMemo, useRef, useState } from "react";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -73,29 +73,34 @@ export default function VerifyScreen() {
         <KeyboardAvoidingView
           behavior="padding"
           automaticOffset
-          style={{ flex: 1, alignItems: "center" }}
+          style={{ flex: 1 }}
         >
-          <Text className="text-2xl font-semibold text-center text-fg dark:text-fg-dark">
-            Verify your email
-          </Text>
-          <Text className="text-center mt-2 text-fg-muted dark:text-fg-muted-dark">
-            Enter the 6-digit code we sent to{"\n"}
-            {email}
-          </Text>
+          <ScrollView
+            contentContainerStyle={{ flexGrow: 1, alignItems: "center" }}
+            keyboardShouldPersistTaps="handled"
+          >
+            <Text className="text-2xl font-semibold text-center text-fg dark:text-fg-dark">
+              Verify your email
+            </Text>
+            <Text className="text-center mt-2 text-fg-muted dark:text-fg-muted-dark">
+              Enter the 6-digit code we sent to{"\n"}
+              {email}
+            </Text>
 
-          <View className="p-8 items-center justify-center w-full">
-            <OtpInput
-              ref={otpRef}
-              autoFocus
-              length={6}
-              disabled={loading}
-              onComplete={handleVerification}
-            />
-          </View>
+            <View className="p-8 items-center justify-center w-full">
+              <OtpInput
+                ref={otpRef}
+                autoFocus
+                length={6}
+                disabled={loading}
+                onComplete={handleVerification}
+              />
+            </View>
 
-          <Text className="text-emerald-600 text-lg dark:text-emerald-400">
-            Didn't receive code?
-          </Text>
+            <Text className="text-emerald-600 text-lg dark:text-emerald-400">
+              Didn't receive code?
+            </Text>
+          </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
     </>
