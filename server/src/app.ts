@@ -8,7 +8,10 @@ import { attachRelay } from "./controllers/relay.controller";
 const PORT = 8000;
 
 const app = express();
-app.use(cors({ origin: "*" }));
+app.set("trust proxy", "loopback");
+app.use(
+  cors({ origin: ["whisper.gaganbiswas.com", "com.gaganbiswas.whisper"] }),
+);
 app.use(express.json());
 
 await db`PRAGMA journal_mode = WAL`;
