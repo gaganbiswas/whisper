@@ -3,7 +3,7 @@ import { STORAGE_KEYS } from "./utils";
 import storage from "./storage";
 
 export const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_URL ?? "https://api.whisper.gaganbiswas.com";
+  process.env.EXPO_PUBLIC_API_URL ?? "https://api.whisper.gaganbiswas.com/api";
 const ax = axios.create({ baseURL: API_BASE_URL });
 
 ax.interceptors.request.use(async (config) => {
