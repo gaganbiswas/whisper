@@ -2,6 +2,10 @@ import type { Server as HttpServer } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import db from "../db/connect";
 import { getDeviceFromToken } from "../lib/device-auth";
+import { redis } from "bun";
+
+const PENDING_TTL_SECONDS = 60 * 60 * 24 * 30;
+const pendingKey = (deviceId: string) => `pending:${deviceId}`;
 
 type ReceiptStatus = "delivered" | "seen";
 
@@ -29,7 +33,6 @@ const MAX_RECEIPT_IDS = 500;
 const MAX_ID_LENGTH = 64;
 
 const online = new Map<string, WebSocket>();
-const pendingByDevice = new Map<string, Envelope[]>();
 
 function send(ws: WebSocket, payload: unknown) {
   ws.send(JSON.stringify(payload));
@@ -43,23 +46,17 @@ function isValidId(value: unknown): value is string {
   );
 }
 
-function deliver(toDeviceId: string, envelope: Envelope) {
-  const pending = pendingByDevice.get(toDeviceId) ?? [];
-  pending.push(envelope);
-  pendingByDevice.set(toDeviceId, pending);
+async function deliver(toDeviceId: string, envelope: Envelope) {
+  const key = pendingKey(toDeviceId);
+  await redis.hset(key, { [envelope.id]: JSON.stringify(envelope) });
+  await redis.expire(key, PENDING_TTL_SECONDS);
 
   const recipient = online.get(toDeviceId);
-  if (recipient?.readyState === WebSocket.OPEN) {
-    send(recipient, envelope);
-  }
+  if (recipient?.readyState === WebSocket.OPEN) send(recipient, envelope);
 }
 
-function acknowledge(deviceId: string, envelopeId: string) {
-  const remaining = (pendingByDevice.get(deviceId) ?? []).filter(
-    (e) => e.id !== envelopeId,
-  );
-  if (remaining.length) pendingByDevice.set(deviceId, remaining);
-  else pendingByDevice.delete(deviceId);
+async function acknowledge(deviceId: string, envelopeId: string) {
+  await redis.hdel(pendingKey(deviceId), envelopeId);
 }
 
 async function getUserDeviceIds(userId: number): Promise<string[]> {
@@ -70,8 +67,8 @@ async function getUserDeviceIds(userId: number): Promise<string[]> {
   return rows.map((row: { device_id: string }) => row.device_id);
 }
 
-export function clearPendingForDevice(deviceId: string) {
-  pendingByDevice.delete(deviceId);
+export async function clearPendingForDevice(deviceId: string) {
+  await redis.del(pendingKey(deviceId));
 }
 
 export function attachRelay(server: HttpServer) {
@@ -81,7 +78,7 @@ export function attachRelay(server: HttpServer) {
     let deviceId: string | null = null;
     let userId: number | null = null;
 
-    ws.on("message", async (raw: Buffer) => {
+    const onMessage = async (raw: Buffer) => {
       let data: any;
       try {
         data = JSON.parse(raw.toString());
@@ -101,9 +98,10 @@ export function attachRelay(server: HttpServer) {
           userId = authed.userId;
           online.set(deviceId, ws);
           send(ws, { type: "auth_ok", deviceId });
-          for (const envelope of pendingByDevice.get(deviceId) ?? []) {
-            send(ws, envelope);
-          }
+          const pending = (await redis.hvals(pendingKey(deviceId)))
+            .map((raw) => JSON.parse(raw) as Envelope)
+            .sort((a, b) => a.ts - b.ts);
+          for (const envelope of pending) send(ws, envelope);
           break;
         }
 
@@ -119,7 +117,7 @@ export function attachRelay(server: HttpServer) {
             return send(ws, { type: "error", reason: "bad_message" });
           }
 
-          deliver(data.toDevice, {
+          await deliver(data.toDevice, {
             type: "message",
             id: data.id,
             fromDevice: deviceId,
@@ -152,7 +150,7 @@ export function attachRelay(server: HttpServer) {
           const fromUser = userId;
           const devices = await getUserDeviceIds(toUser).catch(() => []);
           for (const toDevice of devices) {
-            deliver(toDevice, {
+            await deliver(toDevice, {
               type: "receipt",
               id: crypto.randomUUID(),
               fromUser,
@@ -165,13 +163,22 @@ export function attachRelay(server: HttpServer) {
         }
 
         case "ack": {
-          if (deviceId) acknowledge(deviceId, data.id);
+          if (deviceId && isValidId(data.id)) {
+            await acknowledge(deviceId, data.id);
+          }
           break;
         }
 
         default:
           send(ws, { type: "error", reason: "unknown_type" });
       }
+    };
+
+    ws.on("message", (raw: Buffer) => {
+      onMessage(raw).catch((error) => {
+        console.error(error);
+        send(ws, { type: "error", reason: "server_error" });
+      });
     });
 
     ws.on("close", () => {

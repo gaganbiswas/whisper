@@ -9,6 +9,9 @@ import {
   sendEmail,
 } from "../lib/utils";
 import { clearPendingForDevice } from "./relay.controller";
+import { redis } from "bun";
+
+const OTP_TTL_SECONDS = 5 * 60;
 
 export const sendCode = async (req: Request, res: Response) => {
   const email = normalizeEmail(req.body?.email);
@@ -22,8 +25,7 @@ export const sendCode = async (req: Request, res: Response) => {
       .id;
 
     const otp = generateOTP();
-    await db`DELETE FROM otp WHERE user_id = ${userId}`;
-    await db`INSERT INTO otp (user_id, otp) VALUES (${userId}, ${otp})`;
+    await redis.set(`otp:${userId}`, otp, "EX", OTP_TTL_SECONDS);
     await sendEmail(email, otp);
 
     return res.status(200).json({ message: "Verification code sent!" });
@@ -59,25 +61,17 @@ export const verifyCode = async (req: Request, res: Response) => {
     }
     const userId = user.id;
 
-    const otpRecord = (
-      await db`
-        SELECT 1 FROM otp
-        WHERE user_id = ${userId} AND otp = ${otp} AND expires_at > datetime('now')
-      `
-    )[0];
-
-    if (!otpRecord) {
-      return res.status(404).json({
-        message: "The code entered is invalid. Try again.",
-      });
+    const stored = await redis.get(`otp:${userId}`);
+    if (stored !== otp) {
+      return res
+        .status(404)
+        .json({ message: "The code entered is invalid. Try again." });
     }
 
     const token = crypto.randomBytes(32).toString("base64url");
     const tokenHash = hashToken(token);
 
     await db.transaction(async (tx) => {
-      await tx`DELETE FROM otp WHERE user_id = ${userId}`;
-
       // A device id identifies one account connected to one device
       await tx`
         UPDATE devices SET revoked_at = datetime('now')
@@ -98,8 +92,10 @@ export const verifyCode = async (req: Request, res: Response) => {
 
       await tx`DELETE FROM one_time_prekeys WHERE device_id = ${device.id}`;
     });
+
+    await redis.del(`otp:${userId}`);
     // Anything queued was encrypted for this device's previous identity.
-    clearPendingForDevice(deviceId);
+    await clearPendingForDevice(deviceId);
 
     return res
       .status(200)

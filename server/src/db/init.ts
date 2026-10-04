@@ -24,15 +24,6 @@ export async function initDb() {
   `;
 
   await db`
-    CREATE TABLE IF NOT EXISTS otp (
-      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-      otp TEXT NOT NULL,
-      created_at TEXT NOT NULL DEFAULT (datetime('now')),
-      expires_at TEXT NOT NULL DEFAULT (datetime('now', '+5 minutes'))
-    )
-  `;
-
-  await db`
     CREATE TABLE IF NOT EXISTS signed_prekeys (
       device_id INTEGER PRIMARY KEY REFERENCES devices(id) ON DELETE CASCADE,
       key TEXT NOT NULL,
