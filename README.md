@@ -1,6 +1,6 @@
 # Whisper
 
-Under active development. Will be available to download at https://whisper.gaganbiswas.com
+Available web version at: https://whisper.gaganbiswas.com
 
 ## run locally
 server:
