@@ -11,7 +11,7 @@ const app = express();
 app.set("trust proxy", "loopback");
 app.use(
   cors({
-    origin: ["https://whisper.gaganbiswas.com", "com.gaganbiswas.whisper"],
+    origin: ["https://whisper.gaganbiswas.com"],
   }),
 );
 app.use(express.json());
