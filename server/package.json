@@ -10,7 +10,8 @@
     "@types/ws": "^8.18.1"
   },
   "scripts": {
-    "dev": "bun --watch src/app.ts"
+    "dev": "bun --watch src/app.ts",
+    "start": "NODE_ENV=production bun src/app.ts"
   },
   "peerDependencies": {
     "typescript": "^7"
