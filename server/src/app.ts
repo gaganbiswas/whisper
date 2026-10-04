@@ -10,7 +10,9 @@ const PORT = 8000;
 const app = express();
 app.set("trust proxy", "loopback");
 app.use(
-  cors({ origin: ["whisper.gaganbiswas.com", "com.gaganbiswas.whisper"] }),
+  cors({
+    origin: ["https://whisper.gaganbiswas.com", "com.gaganbiswas.whisper"],
+  }),
 );
 app.use(express.json());
 
