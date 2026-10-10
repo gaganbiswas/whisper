@@ -4,14 +4,21 @@
   "type": "module",
   "private": true,
   "devDependencies": {
+    "@babel/core": "^7",
+    "@babel/preset-env": "^7",
+    "@babel/preset-typescript": "^7",
     "@types/bun": "latest",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
-    "@types/ws": "^8.18.1"
+    "@types/jest": "^30.0.0",
+    "@types/ws": "^8.18.1",
+    "babel-jest": "^30.5.2",
+    "jest": "^30.5.2"
   },
   "scripts": {
     "dev": "bun --watch src/app.ts",
-    "start": "NODE_ENV=production bun src/app.ts"
+    "start": "NODE_ENV=production bun src/app.ts",
+    "test": "jest"
   },
   "peerDependencies": {
     "typescript": "^7"
